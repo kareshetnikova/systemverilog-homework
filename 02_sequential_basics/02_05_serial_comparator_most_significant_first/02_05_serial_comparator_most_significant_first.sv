@@ -39,13 +39,13 @@ endmodule
 
 module serial_comparator_most_significant_first
 (
-  input  clk,
-  input  rst,
-  input  a,
-  input  b,
-  output a_less_b,
-  output a_eq_b,
-  output a_greater_b
+  input logic clk,
+  input logic rst,
+  input logic a,
+  input logic b,
+  output logic a_less_b,
+  output logic a_eq_b,
+  output logic a_greater_b
 );
 
   // Task:
@@ -58,5 +58,37 @@ module serial_comparator_most_significant_first
   //
   // See the testbench for the output format ($display task).
 
+ // Ваш код здесь
+  logic a_less_b_fixed, a_greater_b_fixed;
+  logic temp;
+  assign temp = !a_less_b_fixed & !a_greater_b_fixed;
+
+  assign a_eq_b = temp & (a == b);
+
+  assign a_less_b = a_less_b_fixed | (temp & (!a & b));
+
+  assign a_greater_b = a_greater_b_fixed | (temp & (a & !b));
+
+
+  always_ff @ (posedge clk)
+    if (rst)
+    begin
+      a_less_b_fixed <= 1'b0;
+      a_greater_b_fixed <= 1'b0;
+    end
+
+    else
+    begin
+
+      if (temp)
+      begin
+        if (!a & b)
+          a_less_b_fixed <= 1'b1;
+        else if (a & !b)
+          a_greater_b_fixed <= 1'b1;
+      end
+      
+
+    end
 
 endmodule

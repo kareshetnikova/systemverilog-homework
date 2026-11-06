@@ -1,6 +1,12 @@
 //----------------------------------------------------------------------------
 // Task
 //----------------------------------------------------------------------------
+// typedef enum logic
+// {
+//     S0 = 1'b0;
+//     S1 = 1'b1;
+// } e_state;
+
 
 module round_robin_arbiter_with_2_requests
 (
@@ -22,6 +28,25 @@ module round_robin_arbiter_with_2_requests
     // Example:
     // requests -> 01 00 10 11 11 00 11 00 11 11
     // grants   -> 01 00 10 01 10 00 01 00 10 01
+
+    logic current_state, next_state;
+
+    assign next_state = (~requests[1] & requests[0])
+                      | (~current_state & requests[1] & requests[0])
+                      | (current_state & ~requests[1] & ~requests[0]);
+
+    always_ff @(posedge clk)
+    begin
+        if (rst)
+            current_state <= 1'b0;
+
+        else
+            current_state <= next_state;
+    end
+
+
+    assign grants[1] = (requests[1] & ~requests[0]) | (requests[1] & requests[0] & current_state);
+    assign grants[0] = (~requests[1] & requests[0]) | (requests[1] & requests[0] & ~current_state);
 
 
 endmodule
