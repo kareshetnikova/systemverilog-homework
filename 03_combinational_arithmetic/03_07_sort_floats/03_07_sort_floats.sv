@@ -87,4 +87,50 @@ module sort_three_floats (
     // and usually equal to the bit width of the double-precision floating-point number, FP64, 64 bits.
 
 
+    logic [FLEN-1:0] err_ab, err_ac, err_bc;
+
+    f_less_or_equal a_with_b
+    (
+        .a   ( unsorted[0]        ),
+        .b   ( unsorted[1]       ),
+        .res ( a_less_or_equal_b ),
+        .err ( err_ab                 )
+    );
+
+
+     f_less_or_equal a_with_c
+    (
+        .a   ( unsorted[0]        ),
+        .b   ( unsorted[2]       ),
+        .res ( a_less_or_equal_c ),
+        .err ( err_ac                 )
+    );
+
+
+    f_less_or_equal b_with_c
+        (
+            .a   ( unsorted[1]        ),
+            .b   ( unsorted[2]       ),
+            .res ( b_less_or_equal_c ),
+            .err ( err_bc                 )
+        );
+
+
+
+    assign err = err_ab | err_ac | err_bc;
+
+    always_comb
+    begin
+        case({a_less_or_equal_b, a_less_or_equal_c, b_less_or_equal_c})
+            3'b000: {sorted [0], sorted [1], sorted[2]} = { unsorted[2], unsorted[1], unsorted[0] };
+            3'b100: {sorted [0], sorted [1], sorted[2]} = { unsorted[2], unsorted[0], unsorted[1] };
+            3'b110: {sorted [0], sorted [1], sorted[2]} = { unsorted[0], unsorted[2], unsorted[1] };
+            3'b001: {sorted [0], sorted [1], sorted[2]} = { unsorted[1], unsorted[2], unsorted[0] };
+            3'b011: {sorted [0], sorted [1], sorted[2]} = { unsorted[1], unsorted[0], unsorted[2] };
+            default: sorted = unsorted;
+        endcase
+
+    end
+
+
 endmodule

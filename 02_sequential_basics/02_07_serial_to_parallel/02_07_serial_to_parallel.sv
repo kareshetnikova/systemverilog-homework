@@ -58,9 +58,12 @@ module serial_to_parallel
                 parallel_valid <= 1'b0;
                 parallel_data <= '0;
             end
+            if(parallel)
         end
         
     end
 
+
+    
 
 endmodule

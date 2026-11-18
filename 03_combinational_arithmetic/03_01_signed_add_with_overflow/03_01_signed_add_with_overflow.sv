@@ -18,9 +18,9 @@ endmodule
 
 module signed_add_with_overflow
 (
-  input  [3:0] a, b,
-  output [3:0] sum,
-  output       overflow
+  input logic [3:0] a, b,
+  output logic [3:0] sum,
+  output logic      overflow
 );
 
   // Task:
@@ -37,6 +37,15 @@ module signed_add_with_overflow
   // 4-bit maximum or minimum signed number.
   //
   // Otherwise the 'overflow' should be set to 0.
+
+
+    assign sum = a + b;
+    assign overflow = (a[3] == b[3]) && (a[3] != sum[3]);
+
+   
+
+  
+
 
 
 endmodule
